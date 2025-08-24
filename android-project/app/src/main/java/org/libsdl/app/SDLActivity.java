@@ -97,10 +97,11 @@ public abstract class SDLActivity extends Activity implements View.OnSystemUiVis
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (component.dispatchKeyEvent(event)) {
-            return super.dispatchKeyEvent(event);
-        }
-        return false;
+        return SDLActivityComponent.dispatchKeyEvent(event, this);
+    }
+
+    public static boolean dispatchingKeyEvent() {
+        return SDLActivityComponent.mDispatchingKeyEvent;
     }
 
     @Override

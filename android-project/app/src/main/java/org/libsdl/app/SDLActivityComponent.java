@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.LocaleList;
 import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.util.DisplayMetrics;
@@ -59,8 +60,8 @@ import java.util.Locale;
 public class SDLActivityComponent {
     private static final String TAG = "SDL";
     private static final int SDL_MAJOR_VERSION = 3;
-    private static final int SDL_MINOR_VERSION = 1;
-    private static final int SDL_MICRO_VERSION = 9;
+    private static final int SDL_MINOR_VERSION = 3;
+    private static final int SDL_MICRO_VERSION = 0;
 /*
     // Display InputType.SOURCE/CLASS of events and devices
     //
@@ -231,6 +232,7 @@ public class SDLActivityComponent {
     protected static boolean mSDLMainFinished = false;
     protected static boolean mActivityCreated = false;
     private static SDLFileDialogState mFileDialogState = null;
+    protected static boolean mDispatchingKeyEvent = false;
 
     Activity mActivity;
     private String[] mLibraries;
@@ -810,7 +812,7 @@ public class SDLActivityComponent {
      * @return true if your activity should dispatch key events to superclass
      */
     @ActivityHook
-    public boolean dispatchKeyEvent(KeyEvent event) {
+    public static boolean dispatchKeyEvent(KeyEvent event, Activity mActivity) {
 
         if (SDLActivityComponent.mBrokenLibraries) {
            return false;
@@ -1514,7 +1516,6 @@ public class SDLActivityComponent {
                 // on some devices key events are sent for mouse BUTTON_BACK/FORWARD presses
                 // they are ignored here because sending them as mouse input to SDL is messy
                 if ((keyCode == KeyEvent.KEYCODE_BACK) || (keyCode == KeyEvent.KEYCODE_FORWARD)) {
-    Log.v("SDL", "keycode is back or forward");
                     switch (event.getAction()) {
                     case KeyEvent.ACTION_DOWN:
                     case KeyEvent.ACTION_UP:
@@ -1527,6 +1528,8 @@ public class SDLActivityComponent {
         }
 
         if (event.getAction() == KeyEvent.ACTION_DOWN) {
+            onNativeKeyDown(keyCode);
+
             if (isTextInputEvent(event)) {
                 if (ic != null) {
                     ic.commitText(String.valueOf((char) event.getUnicodeChar()), 1);
@@ -1534,7 +1537,6 @@ public class SDLActivityComponent {
                     SDLInputConnection.nativeCommitText(String.valueOf((char) event.getUnicodeChar()), 1);
                 }
             }
-            onNativeKeyDown(keyCode);
             return true;
         } else if (event.getAction() == KeyEvent.ACTION_UP) {
             onNativeKeyUp(keyCode);
@@ -2127,6 +2129,44 @@ public class SDLActivityComponent {
     static class SDLFileDialogState {
         int requestCode;
         boolean multipleChoice;
+    }
+
+    /**
+     * This method is called by SDL using JNI.
+     */
+    public static String getPreferredLocales() {
+        String result = "";
+        if (Build.VERSION.SDK_INT >= 24 /* Android 7 (N) */) {
+            LocaleList locales = LocaleList.getAdjustedDefault();
+            for (int i = 0; i < locales.size(); i++) {
+                if (i != 0) result += ",";
+                result += formatLocale(locales.get(i));
+            }
+        } else if (mCurrentLocale != null) {
+            result = formatLocale(mCurrentLocale);
+        }
+        return result;
+    }
+
+    public static String formatLocale(Locale locale) {
+        String result = "";
+        String lang = "";
+        if (locale.getLanguage() == "in") {
+            // Indonesian is "id" according to ISO 639.2, but on Android is "in" because of Java backwards compatibility
+            lang = "id";
+        } else if (locale.getLanguage() == "") {
+            // Make sure language is never empty
+            lang = "und";
+        } else {
+            lang = locale.getLanguage();
+        }
+
+        if (locale.getCountry() == "") {
+            result = lang;
+        } else {
+            result = lang + "_" + locale.getCountry();
+        }
+        return result;
     }
 }
 
