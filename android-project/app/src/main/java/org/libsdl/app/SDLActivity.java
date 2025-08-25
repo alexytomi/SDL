@@ -57,7 +57,7 @@ import java.util.Locale;
 /**
     SDL Activity
 */
-public class SDLActivity extends Activity implements View.OnSystemUiVisibilityChangeListener {
+public class SDLActivity extends Activity implements View.OnSystemUiVisibilityChangeListener, SDLActivityImplementation {
     private static final String TAG = "SDL";
     private static final int SDL_MAJOR_VERSION = 3;
     private static final int SDL_MINOR_VERSION = 3;
@@ -255,7 +255,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      * to invoke native code from the specified shared library.
      * It can be overridden by derived classes.
      */
-    protected void main() {
+    public void main() {
         String library = SDLActivity.mSingleton.getMainSharedObject();
         String function = SDLActivity.mSingleton.getMainFunction();
         String[] arguments = SDLActivity.mSingleton.getArguments();

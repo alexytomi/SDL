@@ -16,10 +16,14 @@ import java.util.Locale;
 public class SDLActivityComponent {
 
     private static String TAG = SDLActivityComponent.class.getName();
-    private final Activity mSingleton;
+    protected static Activity mSingletonActivity;
+    protected static SDLActivityImplementation mSingleton;
 
     public SDLActivityComponent(Activity mSingleton) {
-        this.mSingleton = mSingleton;
+        if (mSingleton == null) throw new IllegalStateException("Activity cannot be null!");
+        if (!(mSingleton instanceof SDLActivityImplementation)) throw new IllegalStateException(("Activity must implement SDLActivityImplementation!"));
+        SDLActivityComponent.mSingletonActivity = mSingleton;
+        SDLActivityComponent.mSingleton = (SDLActivityImplementation) mSingleton;
     }
 
     public static Intent makeFileDialogIntent(String[] filters, boolean allowMultiple, boolean forWrite) {
@@ -103,8 +107,6 @@ public class SDLActivityComponent {
 class SDLMain implements Runnable {
     @Override
     public void run() {
-        // Runs SDLActivity.main()
-
         try {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_DISPLAY);
         } catch (Exception e) {
@@ -112,14 +114,14 @@ class SDLMain implements Runnable {
         }
 
         SDLActivity.nativeInitMainThread();
-        SDLActivity.mSingleton.main();
+        SDLActivityComponent.mSingleton.main();
         SDLActivity.nativeCleanupMainThread();
 
-        if (SDLActivity.mSingleton != null && !SDLActivity.mSingleton.isFinishing()) {
+        if (SDLActivityComponent.mSingleton != null && !SDLActivity.mSingleton.isFinishing()) {
             // Let's finish the Activity
-            SDLActivity.mSDLThread = null;
-            SDLActivity.mSDLMainFinished = true;
-            SDLActivity.mSingleton.finish();
+            SDLActivityComponent.mSDLThread = null;
+            SDLActivityComponent.mSDLMainFinished = true;
+            SDLActivityComponent.mSingleton.finish();
         }  // else: Activity is already being destroyed
 
     }
