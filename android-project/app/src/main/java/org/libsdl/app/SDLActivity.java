@@ -2059,55 +2059,16 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         if (mSingleton == null) {
             return false;
         }
-
         if (forWrite) {
             allowMultiple = false;
         }
-
-        /* Convert string list of extensions to their respective MIME types */
-        ArrayList<String> mimes = new ArrayList<>();
-        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
-        if (filters != null) {
-            for (String pattern : filters) {
-                String[] extensions = pattern.split(";");
-
-                if (extensions.length == 1 && extensions[0].equals("*")) {
-                    /* Handle "*" special case */
-                    mimes.add("*/*");
-                } else {
-                    for (String ext : extensions) {
-                        String mime = mimeTypeMap.getMimeTypeFromExtension(ext);
-                        if (mime != null) {
-                            mimes.add(mime);
-                        }
-                    }
-                }
-            }
-        }
-
-        /* Display the file dialog */
-        Intent intent = new Intent(forWrite ? Intent.ACTION_CREATE_DOCUMENT : Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
-        switch (mimes.size()) {
-            case 0:
-                intent.setType("*/*");
-                break;
-            case 1:
-                intent.setType(mimes.get(0));
-                break;
-            default:
-                intent.setType("*/*");
-                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimes.toArray(new String[]{}));
-        }
-
+        Intent intent = SDLActivityComponent.makeFileDialogIntent(filters, allowMultiple, forWrite);
         try {
             mSingleton.startActivityForResult(intent, requestCode);
         } catch (ActivityNotFoundException e) {
             Log.e(TAG, "Unable to open file dialog.", e);
             return false;
         }
-
         /* Save current dialog state */
         mFileDialogState = new SDLFileDialogState();
         mFileDialogState.requestCode = requestCode;
@@ -2132,4 +2093,3 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         return SDLActivityComponent.formatLocale(locale);
     }
 }
-

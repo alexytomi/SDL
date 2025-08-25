@@ -22,6 +22,45 @@ public class SDLActivityComponent {
         this.mSingleton = mSingleton;
     }
 
+    public static Intent makeFileDialogIntent(String[] filters, boolean allowMultiple, boolean forWrite) {
+        /* Convert string list of extensions to their respective MIME types */
+        ArrayList<String> mimes = new ArrayList<>();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        if (filters != null) {
+            for (String pattern : filters) {
+                String[] extensions = pattern.split(";");
+
+                if (extensions.length == 1 && extensions[0].equals("*")) {
+                    /* Handle "*" special case */
+                    mimes.add("*/*");
+                } else {
+                    for (String ext : extensions) {
+                        String mime = mimeTypeMap.getMimeTypeFromExtension(ext);
+                        if (mime != null) {
+                            mimes.add(mime);
+                        }
+                    }
+                }
+            }
+        }
+        /* Display the file dialog */
+        Intent intent = new Intent(forWrite ? Intent.ACTION_CREATE_DOCUMENT : Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+        switch (mimes.size()) {
+            case 0:
+                intent.setType("*/*");
+                break;
+            case 1:
+                intent.setType(mimes.get(0));
+                break;
+            default:
+                intent.setType("*/*");
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, mimes.toArray(new String[]{}));
+        }
+        return intent;
+    }
+
     public static String getPreferredLocales(Locale mCurrentLocale) {
         String result = "";
         if (Build.VERSION.SDK_INT >= 24 /* Android 7 (N) */) {
