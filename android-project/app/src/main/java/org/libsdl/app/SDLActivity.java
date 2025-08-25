@@ -217,6 +217,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
 
     // Main components
     protected static SDLActivity mSingleton;
+    protected SDLActivityComponent mComponent;
     protected static SDLSurface mSurface;
     protected static SDLDummyEdit mTextEdit;
     protected static boolean mScreenKeyboardShown;
@@ -452,6 +453,8 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
         // So we can call stuff from static callbacks
         mSingleton = this;
         SDL.setContext(this);
+
+        mComponent = new SDLActivityComponent(this);
 
         mClipboardHandler = new SDLClipboardHandler();
 
