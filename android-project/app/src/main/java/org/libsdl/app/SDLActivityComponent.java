@@ -5,11 +5,14 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.LocaleList;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -20,10 +23,29 @@ public class SDLActivityComponent {
     protected static SDLActivityImplementation mSingleton;
 
     public SDLActivityComponent(Activity mSingleton) {
+        if (SDLActivityComponent.mSingleton != null) throw new IllegalStateException("Only one activity can handle SDL at a time!");
+        if (SDLActivityComponent.mSingletonActivity != null) throw new IllegalStateException("Only one activity can handle SDL at a time!");
         if (mSingleton == null) throw new IllegalStateException("Activity cannot be null!");
         if (!(mSingleton instanceof SDLActivityImplementation)) throw new IllegalStateException(("Activity must implement SDLActivityImplementation!"));
         SDLActivityComponent.mSingletonActivity = mSingleton;
         SDLActivityComponent.mSingleton = (SDLActivityImplementation) mSingleton;
+    }
+    private static boolean gotSingleton(){
+        return mSingleton != null && mSingletonActivity != null;
+    }
+
+    public static int openFileDescriptor(String uri, String mode) throws Exception {
+        if (gotSingleton()) {
+            return -1;
+        }
+
+        try {
+            ParcelFileDescriptor pfd = mSingletonActivity.getContentResolver().openFileDescriptor(Uri.parse(uri), mode);
+            return pfd != null ? pfd.detachFd() : -1;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     public static Intent makeFileDialogIntent(String[] filters, boolean allowMultiple, boolean forWrite) {

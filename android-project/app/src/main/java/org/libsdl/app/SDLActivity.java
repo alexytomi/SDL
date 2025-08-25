@@ -2039,17 +2039,7 @@ public class SDLActivity extends Activity implements View.OnSystemUiVisibilityCh
      * This method is called by SDL using JNI.
      */
     public static int openFileDescriptor(String uri, String mode) throws Exception {
-        if (mSingleton == null) {
-            return -1;
-        }
-
-        try {
-            ParcelFileDescriptor pfd = mSingleton.getContentResolver().openFileDescriptor(Uri.parse(uri), mode);
-            return pfd != null ? pfd.detachFd() : -1;
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return -1;
-        }
+        SDLActivityComponent.openFileDescriptor(uri, mode);
     }
 
     /**
