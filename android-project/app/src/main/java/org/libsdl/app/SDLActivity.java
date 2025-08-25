@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 
-public abstract class SDLActivity extends Activity implements View.OnSystemUiVisibilityChangeListener, SDLComponentReceiver {
+public abstract class SDLActivity extends Activity implements View.OnSystemUiVisibilityChangeListener, SDLComponentReceiver, SDLConstants {
     private SDLActivityComponent component;
 
     protected String[] getLibraries() {
@@ -119,4 +119,15 @@ public abstract class SDLActivity extends Activity implements View.OnSystemUiVis
     public void onSystemUiVisibilityChange(int visibility) {
         component.onSystemUiVisibilityChange(visibility);
     }
+
+    // TODO: Add back all the old protected methods for backwards compatmessageboxCreateAndShow
+    //getMotionListener
+    //sendCommand
+    //getMainFunction
+    //main
+    //pauseNativeThread
+    //resumeNativeThread
+    //getMainSharedObject
+    //onUnhandledMessage
+    //createSDLSurface
 }

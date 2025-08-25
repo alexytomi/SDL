@@ -53,11 +53,12 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Locale;
 
+import org.libsdl.app.SDLConstants;
 
 /**
     SDL Activity
 */
-public class SDLActivityComponent {
+public class SDLActivityComponent implements SDLConstants{
     private static final String TAG = "SDL";
     private static final int SDL_MAJOR_VERSION = 3;
     private static final int SDL_MINOR_VERSION = 3;
@@ -171,35 +172,6 @@ public class SDLActivityComponent {
 
     public static boolean mIsResumedCalled, mHasFocus;
     public static final boolean mHasMultiWindow = (Build.VERSION.SDK_INT >= 24  /* Android 7.0 (N) */);
-
-    // Cursor types
-    // private static final int SDL_SYSTEM_CURSOR_NONE = -1;
-    private static final int SDL_SYSTEM_CURSOR_ARROW = 0;
-    private static final int SDL_SYSTEM_CURSOR_IBEAM = 1;
-    private static final int SDL_SYSTEM_CURSOR_WAIT = 2;
-    private static final int SDL_SYSTEM_CURSOR_CROSSHAIR = 3;
-    private static final int SDL_SYSTEM_CURSOR_WAITARROW = 4;
-    private static final int SDL_SYSTEM_CURSOR_SIZENWSE = 5;
-    private static final int SDL_SYSTEM_CURSOR_SIZENESW = 6;
-    private static final int SDL_SYSTEM_CURSOR_SIZEWE = 7;
-    private static final int SDL_SYSTEM_CURSOR_SIZENS = 8;
-    private static final int SDL_SYSTEM_CURSOR_SIZEALL = 9;
-    private static final int SDL_SYSTEM_CURSOR_NO = 10;
-    private static final int SDL_SYSTEM_CURSOR_HAND = 11;
-    private static final int SDL_SYSTEM_CURSOR_WINDOW_TOPLEFT = 12;
-    private static final int SDL_SYSTEM_CURSOR_WINDOW_TOP = 13;
-    private static final int SDL_SYSTEM_CURSOR_WINDOW_TOPRIGHT = 14;
-    private static final int SDL_SYSTEM_CURSOR_WINDOW_RIGHT = 15;
-    private static final int SDL_SYSTEM_CURSOR_WINDOW_BOTTOMRIGHT = 16;
-    private static final int SDL_SYSTEM_CURSOR_WINDOW_BOTTOM = 17;
-    private static final int SDL_SYSTEM_CURSOR_WINDOW_BOTTOMLEFT = 18;
-    private static final int SDL_SYSTEM_CURSOR_WINDOW_LEFT = 19;
-
-    protected static final int SDL_ORIENTATION_UNKNOWN = 0;
-    protected static final int SDL_ORIENTATION_LANDSCAPE = 1;
-    protected static final int SDL_ORIENTATION_LANDSCAPE_FLIPPED = 2;
-    protected static final int SDL_ORIENTATION_PORTRAIT = 3;
-    protected static final int SDL_ORIENTATION_PORTRAIT_FLIPPED = 4;
 
     protected static int mCurrentRotation;
     protected static Locale mCurrentLocale;
