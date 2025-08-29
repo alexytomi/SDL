@@ -12,19 +12,33 @@ import android.os.LocaleList;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.view.PointerIcon;
+import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import static org.libsdl.app.SDLConstants.*;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Locale;
 
 public class SDLActivityComponent {
 
     private static String TAG = SDLActivityComponent.class.getName();
+    // Main components
+    protected SDLActivityComponent mComponent;
+    protected static SDLSurface mSurface;
+    protected static SDLDummyEdit mTextEdit;
+    protected static boolean mScreenKeyboardShown;
+    protected static ViewGroup mLayout;
+    protected static SDLClipboardHandler mClipboardHandler;
+    protected static Hashtable<Integer, PointerIcon> mCursors;
+    protected static int mLastCursorID;
+    protected static SDLGenericMotionListener_API14 mMotionListener;
+    protected static HIDDeviceManager mHIDDeviceManager;
     protected static Activity mSingletonActivity;
-    protected static SDLActivityImplementation mSingleton;
+    protected static SDLApplication mSingleton;
 
     // This is what SDL runs in. It invokes SDL_main(), eventually
     protected static Thread mSDLThread;
@@ -33,9 +47,21 @@ public class SDLActivityComponent {
         if (SDLActivityComponent.mSingleton != null) throw new IllegalStateException("Only one activity can handle SDL at a time!");
         if (SDLActivityComponent.mSingletonActivity != null) throw new IllegalStateException("Only one activity can handle SDL at a time!");
         if (mSingleton == null) throw new IllegalStateException("Activity cannot be null!");
-        if (!(mSingleton instanceof SDLActivityImplementation)) throw new IllegalStateException(("Activity must implement SDLActivityImplementation!"));
+        if (!(mSingleton instanceof SDLApplication)) throw new IllegalStateException(("Activity must implement SDLActivityImplementation!"));
         SDLActivityComponent.mSingletonActivity = mSingleton;
-        SDLActivityComponent.mSingleton = (SDLActivityImplementation) mSingleton;
+        SDLActivityComponent.mSingleton = (SDLApplication) mSingleton;
+
+
+        mClipboardHandler = new SDLClipboardHandler();
+
+        mHIDDeviceManager = HIDDeviceManager.acquire(mSingletonActivity);
+
+        // Set up the surface
+        mSurface = new SDLSurface(mSingletonActivity);
+
+        mLayout = new RelativeLayout(mSingletonActivity);
+        mLayout.addView(mSurface);
+
     }
     private static boolean gotSingleton(){
         return mSingleton != null && mSingletonActivity != null;

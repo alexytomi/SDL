@@ -1,11 +1,6 @@
 package org.libsdl.app;
 
-import static org.libsdl.app.SDL.getContext;
-
-import android.app.Activity;
-import android.util.Log;
-
-interface SDLActivityImplementation {
+interface SDLApplication {
     /**
      * The application entry point, called on a dedicated thread (SDLThread).
      * The default implementation uses the getMainSharedObject() and getMainFunction() methods

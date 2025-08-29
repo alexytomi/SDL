@@ -7,7 +7,6 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
-import android.content.ClipboardManager;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -25,9 +24,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.LocaleList;
 import android.os.Message;
-import android.os.ParcelFileDescriptor;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
@@ -43,15 +40,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Locale;
 
@@ -59,7 +52,7 @@ import java.util.Locale;
 /**
     SDL Activity
 */
-public class SDLActivity extends Activity implements View.OnSystemUiVisibilityChangeListener, SDLActivityImplementation {
+public class SDLActivity extends Activity implements View.OnSystemUiVisibilityChangeListener, SDLApplication {
     private static final String TAG = "SDL";
     private static final int SDL_MAJOR_VERSION = 3;
     private static final int SDL_MINOR_VERSION = 3;
