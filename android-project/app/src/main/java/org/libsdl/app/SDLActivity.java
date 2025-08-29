@@ -1,6 +1,7 @@
 package org.libsdl.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -120,14 +121,55 @@ public abstract class SDLActivity extends Activity implements View.OnSystemUiVis
         component.onSystemUiVisibilityChange(visibility);
     }
 
-    // TODO: Add back all the old protected methods for backwards compatmessageboxCreateAndShow
-    //getMotionListener
-    //sendCommand
-    //getMainFunction
-    //main
-    //pauseNativeThread
-    //resumeNativeThread
-    //getMainSharedObject
-    //onUnhandledMessage
-    //createSDLSurface
+    protected static SDLGenericMotionListener_API14 getMotionListener(){
+        return SDLActivityComponent.getMotionListener();
+    }
+
+    protected boolean sendCommand(int command, Object data) {
+        return component.sendCommand(command, data);
+    }
+
+    /**
+     * This method returns the name of the application entry point
+     * It can be overridden by derived classes.
+     */
+    protected String getMainFunction() {
+        return component.getMainFunction();
+    }
+
+    /**
+     * This method returns the name of the shared object with the application entry point
+     * It can be overridden by derived classes.
+     */
+    protected String getMainSharedObject() {
+        return component.getMainSharedObject();
+    }
+
+    /**
+     * This method is called by SDL if SDL did not handle a message itself.
+     * This happens if a received message contains an unsupported command.
+     * Method can be overwritten to handle Messages in a different class.
+     * @param command the command of the message.
+     * @param param the parameter of the message. May be null.
+     * @return if the message was handled in overridden method.
+     */
+    protected boolean onUnhandledMessage(int command, Object param) {
+        return component.onUnhandledMessage(command, param);
+    }
+
+    protected SDLSurface createSDLSurface(Context context) {
+        return component.createSDLSurface(context);
+    }
+
+    protected void main() {
+        component.main();
+    }
+
+    protected void pauseNativeThread() {
+        component.pauseNativeThread();
+    }
+
+    protected void resumeNativeThread() {
+        component.resumeNativeThread();
+    }
 }
